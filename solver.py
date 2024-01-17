@@ -10,8 +10,8 @@ import copy
 # 7 8 
 
 def main():
-    initial_board = { "board": [[1,3,5], [4,2, None], [7,8,6]]}
-    # initial_board = create_board()
+    # initial_board = { "board": [[1,3,5], [4,2, None], [7,8,6]]}
+    initial_board = create_board()
     current_board = initial_board
 
     print("initial board: ")
@@ -36,25 +36,29 @@ def main():
         current_possibilities = find_possibilities(current_board["board"])
 
         for possibility in current_possibilities:
+            if possibility not in active_boards and possibility["board"] not in controlled_boards:
+                active_boards.append(possibility)
+
             possibility["parent_nodes"] = []
             possibility["parent_nodes"] += current_board["parent_nodes"] + [{"board": current_board["board"], "possibility_action": possibility["possibility_action"]}]
 
-        active_boards += current_possibilities
-
         least_heuristic = 100
 
+#        print("Active Boards: ")
         for active_board in active_boards:
+#            print("heuristic: ", active_board["heuristic"])
+#            print_board(active_board["board"])
+#            print(" ## # # # # # # # #")
             if active_board["heuristic"] < least_heuristic and active_board["board"] not in controlled_boards:
                 least_heuristic = active_board["heuristic"]
                 current_board = active_board
 
+        controlled_boards.append(current_board["board"])
         active_boards.remove(current_board)
 
         if current_board["heuristic"] == 0:
             is_solved = True
             
-        controlled_boards.append(current_board)
-
         print(" ")
         print("least heuristic: ", least_heuristic)
         print("current board: ")
